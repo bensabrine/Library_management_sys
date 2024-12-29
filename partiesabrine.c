@@ -122,3 +122,24 @@ void generateBooks() {
     fclose(fileB);
     printf("fichier %s cree avec succes avec un livre par default.\n");
 }
+void registerUser() {
+   char username[20];
+   char password[10];
+   char role[10];
+   printf("bienvenue veuillez suivre les etapes suivantes si vous navez pas de comptes\n");
+   printf("\nentrez le nom dutilisateurs:");
+   scanf("%s",username);
+   if(isUsernameUnique(username) ==0){
+     printf("erreur ce nom existe deja");
+     return;
+   }
+   printf("\nentrez le mot de passe(sans espace):");
+   scanf("%s",password);
+   printf("entrez le role:\n");
+   scanf("%s",role);
+   FILE *file =fopen(usersFile,"a");
+   fprintf(file,"%s,%s,%s\n",username,password,role);
+   fclose(file);
+   printf("inscription avec succees.\n");
+   printf("veuillez maintenant vous connecter .\n");
+}

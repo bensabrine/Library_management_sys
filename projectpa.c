@@ -37,51 +37,59 @@ void addBook();
 void viewBooks();
 void updateBook();
 void deleteBook();
-
 void borrowBook();
 
-int isUsernameUnique(const char *username);
-int authenticateUser(const char *username, const char *password, char *role);
-void menuAdmin();
-void menuMember();
+void borrowBook() {
+    int id, quantity;
+    printf("Entrez l'ID du livre à emprunter : ");
+    scanf("%d", &id);
+    printf("Entrez la quantité à emprunter : ");
+    scanf("%d", &quantity);
 
-int main() {
-    int choice;
-    char role[7];
-    
-    printf("LIBRARY MANAGMENT SYSTEM\n");
-    generateUsers();
-    generateBooks();
-    //WHILE crée un menu interactif qui se répète jusqu'à  que USER quitte LE 1 CEST POUR DIRE QUE WHILE(x) x>0 alors condition vrai rester dans 
-    //la boucle
-    while (1) {
-        printf("\n1. Enregistrer\n");
-        printf("2. Se connecter\n");
-        printf("3. Quitter\n");
-        printf("Entrez votre choix : ");
-        scanf("%d", &choice);
-        //ON PEUX UTILISER IF ELSE AUSSI
-        switch (choice) {
-            case 1:
-                registerUser();
-                break;
-            case 2:
-                if (loginUser(role)) {
-                    if (strcmp(role, "Admin") == 0) {
-                        menuAdmin();
-                    } else {
-                        menuMember();
-                    }
-                }
-                break;
-            case 3:
-                printf("Au revoir !\n");
-                exit(0); // Le paramètre 0 indique que le programme se termine normalement, sans erreur. exit est une fonction de stdio.h
-            default:
-                printf("Choix invalide.\n");
-        }
+    FILE *file = fopen(booksFile, "r");
+    if (file == NULL) {
+        printf("Aucun livre trouvé.\n");
+        return;
     }
-    return 0;
+
+    FILE *temp = fopen("temp.txt", "w");
+    if (temp == NULL) {
+        printf("Erreur : Impossible de créer un fichier temporaire.\n");
+        fclose(file);
+        return;
+    }
+
+    char line[200];
+    int found = 0, sufficient = 1;
+    while (fgets(line, sizeof(line), file)) {
+        Book book;
+        sscanf(line, "%d,%[^,],%[^,],%f,%d", &book.id, book.title, book.author, &book.price, &book.quantity);
+
+        if (book.id == id) {
+            found = 1;
+            if (book.quantity < quantity) {
+                sufficient = 0;
+            } else {
+                book.quantity -= quantity;
+            }
+        }
+
+        fprintf(temp, "%d,%s,%s,%.2f,%d\n", book.id, book.title, book.author, book.price, book.quantity);
+    }
+
+    fclose(file);
+    fclose(temp);
+
+    remove(booksFile);
+    rename("temp.txt", booksFile);
+
+    if (!found) {
+        printf("Livre non trouvé.\n");
+    } else if (!sufficient) {
+        printf("Quantité insuffisante.\n");
+    } else {
+        printf("Livre emprunté avec succès.\n");
+    }
 }
 
 void generateUsers() {

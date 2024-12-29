@@ -1,4 +1,3 @@
-void borrowBook();
 
 void borrowBook() {
     int id, quantity;
@@ -52,6 +51,8 @@ void borrowBook() {
         printf("Livre emprunté avec succès.\n");
     }
 }
+  
+         
 void deleteBook() {
     int id;
     printf("Entrez ID du livre a supprimer : ");

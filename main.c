@@ -1,5 +1,3 @@
-void borrowBook();
-
 void borrowBook() {
     int id, quantity;
     printf("Entrez l'ID du livre à emprunter : ");
